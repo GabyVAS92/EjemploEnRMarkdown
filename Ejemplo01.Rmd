@@ -1,0 +1,69 @@
+---
+title: "Primer reporte en R Markdown"
+author: "Gabriela Vergara 124271"
+date: "Sunday, January 25, 2015"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+summary(cars)
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+getwd()
+setwd("C:/Users/GABY/Desktop/PrimerProyecto")
+install.packages("devtools")
+library(devtools)
+find_rtools()
+
+install.packages("knitr")
+
+install.packages("ggmap")
+
+###Introducción al formato R Markdown
+
+Ejemplo elaborado en `r date()`.
+
+```{r Paquetes}
+library(ggmap)
+```
+
+
+``` {r GenerarDatos, message=FALSE}
+# Llenar información (solo lo que está entre "")
+clave.unica <- rep ("124271",3)
+#1: Si es mixto, 0: no lo es.
+es.mixto <- c(universidad = 1, preparatoria = 1, secundaria = 1)
+#Llenar con la dirección
+universidad <- geocode("ITAM")
+preparatoria <- geocode("Instituto Rosedal Lomas, Rosedal, Lomas de Chapultepec, Miguel Hidalgo")
+secundaria <- geocode("Instituto Rosedal Lomas, Rosedal, Lomas de Chapultepec, Miguel Hidalgo")
+# Generamos la información
+educacion <- rbind(universidad, preparatoria, secundaria)
+educacion <- cbind(clave.unica,es.mixto, educacion)
+```
+
+```{r ObtenciónCoordenadasYMapas, warning=FALSE, message=FALSE}
+limites <- make_bbox(lon, lat, educacion, f = 0.7)
+mapa <- get_map(location = limites,
+                maptype = "roadmap",
+                source = "google")
+```
+
+```{r GraficarLocalizaciones, echo=FALSE}
+ggmap(mapa) +
+geom_point(data = educacion,
+           aes(x = lon, y = lat),
+           size = 4, alpha = 0.6, colour = "red")
+```
